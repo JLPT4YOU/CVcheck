@@ -10,8 +10,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
 import { useLanguage } from '@/lib/language-context'
+import { GEMINI_MODELS } from '@/lib/translations'
 import type { JobDescription, CVAnalysisResult } from '@/types/cv-analysis'
-import type { Language } from '@/lib/translations'
+import type { Language, ResponseLanguage, GeminiModel } from '@/lib/translations'
 
 function HomeContent() {
   const { language, setLanguage, t } = useLanguage()
@@ -31,12 +32,22 @@ function HomeContent() {
   const [analyzing, setAnalyzing] = useState(false)
   const [result, setResult] = useState<CVAnalysisResult | null>(null)
   const [error, setError] = useState('')
+  const [responseLanguage, setResponseLanguage] = useState<ResponseLanguage>('vi')
+  const [selectedModel, setSelectedModel] = useState<GeminiModel>('gemini-2.5-flash')
 
-  // Load API key from localStorage on mount
+  // Load preferences from localStorage on mount
   useEffect(() => {
     const savedKey = localStorage.getItem('gemini_api_key')
     if (savedKey) {
       setApiKey(savedKey)
+    }
+    const savedResponseLang = localStorage.getItem('response_language') as ResponseLanguage
+    if (savedResponseLang) {
+      setResponseLanguage(savedResponseLang)
+    }
+    const savedModel = localStorage.getItem('selected_model') as GeminiModel
+    if (savedModel) {
+      setSelectedModel(savedModel)
     }
   }, [])
 
@@ -168,7 +179,9 @@ function HomeContent() {
           jobDescription: jobData,
           cvFileUri,
           cvMimeType,
-          apiKey
+          apiKey,
+          responseLanguage,
+          model: selectedModel
         })
       })
 
@@ -312,6 +325,67 @@ function HomeContent() {
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Response Language Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="w-5 h-5" />
+                  {t('responseLanguage')}
+                </CardTitle>
+                <CardDescription>
+                  {t('responseLanguageDesc')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-2">
+                  {(['en', 'vi', 'ja'] as const).map((lang) => (
+                    <Button
+                      key={lang}
+                      onClick={() => {
+                        setResponseLanguage(lang)
+                        localStorage.setItem('response_language', lang)
+                      }}
+                      variant={responseLanguage === lang ? 'default' : 'outline'}
+                      size="sm"
+                      className="flex-1"
+                    >
+                      {lang === 'en' ? t('english') : lang === 'vi' ? t('vietnamese') : t('japanese')}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Model Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  {t('modelSelection')}
+                </CardTitle>
+                <CardDescription>
+                  {t('modelDesc')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => {
+                    const model = e.target.value as GeminiModel
+                    setSelectedModel(model)
+                    localStorage.setItem('selected_model', model)
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {GEMINI_MODELS.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
               </CardContent>
             </Card>
 

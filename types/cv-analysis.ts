@@ -22,4 +22,6 @@ export interface AnalysisRequest {
   cvFileUri?: string
   cvMimeType?: string
   apiKey: string
+  responseLanguage?: 'en' | 'vi' | 'ja'
+  model?: string
 }

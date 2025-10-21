@@ -5,7 +5,7 @@ import type { CVAnalysisResult, AnalysisRequest } from '@/types/cv-analysis'
 export async function POST(request: NextRequest) {
   try {
     const body: AnalysisRequest = await request.json()
-    const { jobDescription, cvFileUri, cvMimeType, apiKey } = body
+    const { jobDescription, cvFileUri, cvMimeType, apiKey, responseLanguage = 'vi', model = 'gemini-2.5-flash' } = body
 
     if (!apiKey) {
       return NextResponse.json(
@@ -24,9 +24,16 @@ export async function POST(request: NextRequest) {
     // Initialize Google GenAI client with user's API key
     const ai = new GoogleGenAI({ apiKey })
 
+    // Determine language instruction
+    const languageInstructions = {
+      en: 'You are an HR recruitment expert. Analyze the candidate\'s CV PDF based on the provided job information.',
+      vi: 'Bạn là một chuyên gia tuyển dụng HR. Hãy phân tích CV PDF của ứng viên dựa trên thông tin công việc được cung cấp.',
+      ja: 'あなたはHR採用の専門家です。提供された会社情報に基づいて、候補者のCV PDFを分析してください。'
+    }
+
     // Construct the prompt for Gemini
     const prompt = `
-Bạn là một chuyên gia tuyển dụng HR. Hãy phân tích CV PDF của ứng viên dựa trên thông tin công việc được cung cấp.
+${languageInstructions[responseLanguage as keyof typeof languageInstructions]}
 
 **THÔNG TIN CÔNG VIỆC:**
 - Vị trí: ${jobDescription.jobTitle}
@@ -58,9 +65,9 @@ CHỈ trả về JSON thuần túy, KHÔNG thêm markdown formatting hoặc text
       prompt
     ])
 
-    // Call Gemini 2.5 Flash with File API
+    // Call Gemini with selected model and File API
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: model,
       contents: contents
     })
 

@@ -1,4 +1,17 @@
 export type Language = 'vi' | 'ja'
+export type ResponseLanguage = 'en' | 'vi' | 'ja'
+export type GeminiModel = 'gemini-2.0-flash' | 'gemini-2.0-flash-001' | 'gemini-2.0-flash-exp' | 'gemini-2.0-flash-lite' | 'gemini-2.0-flash-lite-001' | 'gemini-2.0-flash-lite-preview' | 'gemini-2.0-flash-lite-preview-02-05' | 'gemini-2.5-flash' | 'gemini-2.5-flash-lite' | 'gemini-2.5-flash-lite-preview-06-17' | 'gemini-2.5-flash-preview-05-20'
+
+export const GEMINI_MODELS: { label: string; value: GeminiModel }[] = [
+  { label: 'Gemini 2.5 Flash (Recommended)', value: 'gemini-2.5-flash' },
+  { label: 'Gemini 2.5 Flash Lite', value: 'gemini-2.5-flash-lite' },
+  { label: 'Gemini 2.5 Flash Lite Preview', value: 'gemini-2.5-flash-lite-preview-06-17' },
+  { label: 'Gemini 2.5 Flash Preview', value: 'gemini-2.5-flash-preview-05-20' },
+  { label: 'Gemini 2.0 Flash', value: 'gemini-2.0-flash' },
+  { label: 'Gemini 2.0 Flash Lite', value: 'gemini-2.0-flash-lite' },
+  { label: 'Gemini 2.0 Flash Lite Preview', value: 'gemini-2.0-flash-lite-preview' },
+  { label: 'Gemini 2.0 Flash Exp', value: 'gemini-2.0-flash-exp' },
+]
 
 export const translations = {
   vi: {
@@ -62,6 +75,13 @@ export const translations = {
     language: 'Ngôn ngữ',
     vietnamese: 'Tiếng Việt',
     japanese: '日本語',
+    
+    // Response Language & Model
+    responseLanguage: 'Ngôn ngữ phản hồi',
+    responseLanguageDesc: 'Chọn ngôn ngữ cho kết quả phân tích',
+    english: 'English',
+    modelSelection: 'Chọn Model',
+    modelDesc: 'Chọn model Gemini để sử dụng',
   },
   ja: {
     // Header
@@ -124,6 +144,13 @@ export const translations = {
     language: '言語',
     vietnamese: 'Tiếng Việt',
     japanese: '日本語',
+    
+    // Response Language & Model
+    responseLanguage: '回答言語',
+    responseLanguageDesc: '分析結果の言語を選択',
+    english: 'English',
+    modelSelection: 'モデルを選択',
+    modelDesc: '使用するGeminiモデルを選択',
   }
 }
 
